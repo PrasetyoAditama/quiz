@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Quiz | Leaderboard</title>
+        <link rel="stylesheet" href="assets/stylesheets/styles.css"/>
+        <link rel="icon" href="assets/images/favicon.ico?v=2.0"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <main class="index-center">
+            <h1>Papan Peringkat</h1>
+            <div id="lb-tabs">
+                <button class="lb-tab active" onclick="switchTab('easy', this)">Mudah</button>
+                <button class="lb-tab" onclick="switchTab('medium', this)">Sedang</button>
+                <button class="lb-tab" onclick="switchTab('hard', this)">Sulit</button>
+            </div>
+            <div class="card" style="width:100%">
+                <table id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nama</th>
+                            <th>Skor</th>
+                            <th>Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body"></tbody>
+                </table>
+                <p id="leaderboard-empty">Belum ada data. Mainkan permainan dulu!</p>
+                <p id="leaderboard-loading">Memuat...</p>
+            </div>
+            <div style="display:flex;gap:12px">
+                <a href="index.html" class="button">Main 🍃</a>
+            </div>
+        </main>
+
+        <script src="assets/scripts/layout.js"></script>
+        <script src="assets/scripts/jsonbin.js"></script>
+        <script>
+            let currentDiff = 'easy';
+            let allEntries = [];
+
+            function renderTable(diff) {
+                const entries = allEntries.filter(e => e.difficulty === diff);
+                entries.sort((a, b) => b.score - a.score || a.elapsed - b.elapsed);
+
+                const tbody = document.getElementById('leaderboard-body');
+                const empty = document.getElementById('leaderboard-empty');
+                tbody.innerHTML = '';
+
+                if(entries.length === 0) {
+                    empty.style.display = 'block';
+                } else {
+                    empty.style.display = 'none';
+                    entries.forEach((e, i) => {
+                        const m = Math.floor(e.elapsed / 60), s = e.elapsed % 60;
+                        const time = (m > 0 ? m + 'm ' : '') + s + 's';
+                        tbody.innerHTML += `<tr ${i === 0 ? 'class="top-row"' : ''}>
+                            <td>${i + 1}</td>
+                            <td>${e.name}</td>
+                            <td>${e.score}</td>
+                            <td>${time}</td>
+                        </tr>`;
+                    });
+                }
+            }
+
+            function switchTab(diff, btn) {
+                currentDiff = diff;
+                document.querySelectorAll('.lb-tab').forEach(t => t.classList.remove('active'));
+                btn.classList.add('active');
+                renderTable(diff);
+            }
+
+            async function clearBoard() {
+                allEntries = allEntries.filter(e => e.difficulty !== currentDiff);
+                await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+                    method: 'PUT',
+                    headers: HEADERS,
+                    body: JSON.stringify({ entries: allEntries })
+                });
+                renderTable(currentDiff);
+            }
+
+            // load on start
+            const loading = document.getElementById('leaderboard-loading');
+            getEntries().then(entries => {
+                allEntries = entries;
+                loading.style.display = 'none';
+                renderTable('easy');
+            });
+        </script>
+    </body>
+</html>

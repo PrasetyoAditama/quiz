@@ -8,33 +8,31 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body id="gameBody">
-        <header>
-            <a href="index.html" id="title">Quiz</a>
-        </header>
-        
         <main class="transparentBox">
             <div id="topBar">
-                <div class="whiteTransBox">
-                    <p class="blueTxtPale semiBold">Time left</p>
-                    <p id="timer" class="blueTxt big semiBold"></p>
+                <div id="topBar-item">
+                    <p class="semiBold">Waktu Tersisa</p>
+                    <p id="timer" class="big semiBold"></p>
                 </div>
-                <div class="whiteTransBox" id="questionInfoBox">
-                    <span class="blueTxt big semiBold">Question <span id="questionNum">1</span>/10</span>
-                    <div id="category" class="blueTxtPale semiBold"></div>
+                <div id="topBar-divider"></div>
+                <div id="topBar-item">
+                    <p class="semiBold">Pertanyaan</p>
+                    <p class="big semiBold"><span id="questionNum">1</span>/10</p>
                 </div>
-                <div class="whiteTransBox">
-                    <p class="blueTxtPale semiBold">Score</p> 
-                    <p id="scoreNum" class="infoData blueTxt big semiBold">0</p>
+                <div id="topBar-divider"></div>
+                <div id="topBar-item">
+                    <p class="semiBold">Skor</p>
+                    <p id="scoreNum" class="big semiBold">0</p>
                 </div>
             </div>
             <div class="center-box">
-                <h2 id="vprasanje">If you don't see the question, wait at least 5s and then refresh this page.</h2>
+                <h2 id="vprasanje">Jika Anda tidak melihat pertanyaan, tunggu setidaknya 5 detik dan kemudian segarkan halaman ini.</h2>
                 <div id="odgovor">
                     <ul id="answerList"></ul>
                 </div>
                 <div id="newBox" class="whiteTransBox">
-                    <div id="messageBox" class="big semiBold">
-                        <p id="noTimeLeft" style="display: none;">You ran out of time! Be faster!</p>
+                    <div id="messageBox">
+                        <p id="noTimeLeft" style="display: none;">Waktu habis! Semoga anda bisa lebih cepat lain kali!</p>
                         <p id="message"></p>
                     </div>
                     <button id="mainButton" class="button big semiBold"></button>
@@ -44,15 +42,13 @@
             </div>
         </main>
         
-        <footer id="game-footer">
-                <a class="footerIconContainer" href="https://github.com/galgaz/quiz"><img class="footerIcon" src="assets/images/github-mark-white.svg"></img></a> | <span>All of the questions are from <a href="https://opentdb.com/">Open Trivia Database.</a></span>
-        </footer>
-        
+        <script src="assets/scripts/layout.js"></script>
+        <script src="questions/questions.js"></script>
         <script src="assets/scripts/global.js"></script>
         <script src="assets/scripts/mainButton.js"></script>
         <script src="assets/scripts/answerDisplay.js"></script>
         <script src="assets/scripts/timer.js"></script>
         <script src="assets/scripts/questionHandling.js"></script>
-        <script> window.onload = getQuestions; </script>
+        <script> window.onload = () => { getQuestions(); startTimer(); }; </script>
         </body>
 </html>

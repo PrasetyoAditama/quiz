@@ -8,30 +8,39 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-        <header>
-            <a href="index.html" id="title">Quiz</a>
-        </header>
-
         <div class="transparentBox resultCenter">
 
             <main class="center-box index-center">
-                <h1>Game finished!</h1>
-                <div class="whiteTransBox resultBox">
-                    <p id="scoreText" class="blueTxtPale big semiBold">Your score</p>
-                    <h1 id="scoreNum" class="blueTxt bold">0</h1>
+                <h1>Permainan Selesai!</h1>
+                <div class="whiteTransBox resultBox card">
+                    <p id="playerName"></p>
+                    <p id="scoreText">Skor Anda</p>
+                    <h1 id="scoreNum">0</h1>
+                    <p id="timeTaken"></p>
                 </div>
-                <a href="game.html" class="button big semiBold">Play again</a>
+                <a href="index.html" class="button big semiBold">Main lagi?</a>
             </main>
         </div>
 
+        <script src="assets/scripts/layout.js"></script>
+        <script src="assets/scripts/jsonbin.js"></script>
         <script>
-            let queryStr = window.location.search;
-            const urlParams = new URLSearchParams(queryStr);
+            const urlParams = new URLSearchParams(window.location.search);
             const score = urlParams.get('score');
+            const name = urlParams.get('name');
+            const elapsed = parseInt(urlParams.get('elapsed'));
+            const difficulty = urlParams.get('difficulty') || 'medium';
+
             document.getElementById("scoreNum").innerHTML = score;
+            if(name) document.getElementById("playerName").innerHTML = name;
+            if(elapsed) {
+                const m = Math.floor(elapsed / 60), s = elapsed % 60;
+                document.getElementById("timeTaken").innerHTML = `Diselesaikan dalam ${m > 0 ? m + 'm ' : ''}${s}d`;
+            }
+
+            if(name && score) {
+                saveEntry({ name, score: parseInt(score), elapsed, difficulty });
+            }
         </script>
-        <footer>
-            <a class="footerIconContainer" href="https://github.com/galgaz/quiz"><img class="footerIcon" src="assets/images/github-mark-white.svg"></img></a> | <span>All of the questions are from <a href="https://opentdb.com/">Open Trivia Database.</a></span>
-        </footer>
     </body>
 </html>

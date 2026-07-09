@@ -4,14 +4,14 @@ function btnEnable(type){
     if(type == 'confirm'){
         mainButton.removeEventListener('click', nextQuestion);
         mainButton.addEventListener("click", confirmAnswer);
-        mainButton.innerHTML = 'Confirm';
+        mainButton.innerHTML = 'Konfirmasi';
         newBox.setAttribute('class', '');
         messageBox.style.display = 'none';
     }
     else if(type == 'next'){
         mainButton.removeEventListener('click', confirmAnswer);
         mainButton.addEventListener("click", nextQuestion);
-        mainButton.innerHTML = 'Next question';
+        mainButton.innerHTML = 'Pertanyaan berikutnya';
         messageBox.style.display = 'flex';
         newBox.setAttribute('class', 'whiteTransBox');
     }

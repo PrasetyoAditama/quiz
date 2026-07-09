@@ -9,20 +9,38 @@
     </head>
 
     <body class="index-body">
-        <header>
-            <a href="index.html" id="title">Quiz</a>
-        </header>
-
-        <main class="center-box index-center">
-            <h1>Play quiz now!</h1>
-            <div>
-                <p>Answer 10 questions from different categories.</p>
+        <main class="index-center">
+            <center><h1>Uji pengetahuan anda mengenai pelestarian lingkungan !</h1></center>
+            <div class="card">
+                <div id="setupForm">
+                    <label for="playerName">Nama Anda</label>
+                    <input type="text" id="playerName" placeholder="Masukkan nama Anda" maxlength="20" autocomplete="off" oninput="document.getElementById('nameError').style.display='none'"/>
+                    <p id="nameError" style="display:none; color: var(--red); font-size: 13px; font-weight: 600;">Tolong masukkan nama Anda sebelum melanjutkan.</p>
+                    <label for="difficulty">Kesulitan</label>
+                    <select id="difficulty">
+                        <option value="easy">Mudah - 60 Detik</option>
+                        <option value="medium" selected>Sedang — 45 Detik</option>
+                        <option value="hard">Sulit — 30 Detik</option>
+                    </select>
+                </div>
             </div>
-            <a href="game.html" id="startBtn" class="button big semiBold">Start</a>
+            <button class="button" onclick="startGame()">Mulai 🍃</button>
+            <a href="https://terrabhinneka-domino-iklim-6535260772.asia-southeast1.run.app/" target="_blank" id="terra-link">🌍 Kunjungi TerraBhinneka Domino Iklim</a>
+        </main>
+        <script src="assets/scripts/layout.js"></script>
+        <script>
+                function startGame(){
+                    const name = document.getElementById('playerName').value.trim();
+                    const diff = document.getElementById('difficulty').value;
+                    if(!name){
+                        document.getElementById('playerName').focus();
+                        document.getElementById('nameError').style.display = 'block';
+                        return;
+                    }
+                    window.location.href = `game.html?difficulty=${diff}&name=${encodeURIComponent(name)}`;
+                }
+            </script>
         </main>
 
-        <footer>
-            <a class="footerIconContainer" href="https://github.com/galgaz/quiz"><img class="footerIcon" src="assets/images/github-mark-white.svg"></img></a> | <span>All of the questions are from <a href="https://opentdb.com/">Open Trivia Database.</a></span>
-        </footer>
     </body>
 </html>

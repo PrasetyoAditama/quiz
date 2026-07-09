@@ -1,10 +1,7 @@
-// iz serverja dobi vprašanje in ga prikaže
 async function getQuestions(e){
     document.getElementById('answerList').setAttribute('class', '');
-    const response = await fetch(apiUrl, {
-        method: 'GET'
-    });
-    questionsJSON = await response.json();
+    const shuffled = quizData.results.slice().sort(() => Math.random() - 0.5);
+    questionsJSON = { results: shuffled.slice(0, totalQuestions) };
     nextQuestion();
     return 0;
 }
@@ -12,27 +9,23 @@ async function getQuestions(e){
 async function nextQuestion(e){
     document.getElementById('answerList').setAttribute('class', '');
     if(questionNum < totalQuestions-1){
-        // odstrani ostanke prejsnjih vprašanj začne timer in prikaže št vprašanja
         message.innerHTML = "";
         btnEnable('confirm');
-        clearInterval(questionTimer);
-        startTimer();
         questionNum = updateQuestionNumber(questionNum);
-    
-        // prikaže vprašanje in lastnosti
+        questionStartTime = Date.now();
+
         document.getElementById("vprasanje").innerHTML = questionsJSON.results[questionNum].question;
-        document.getElementById('category').innerHTML = questionsJSON.results[questionNum].category;
-    
-        // odstrani prejsnje odgovore
         const ansList = document.getElementById("answerList");
         while(ansList.firstChild){ 
             ansList.removeChild(ansList.firstChild);
         }        
         answers.length = 0;
 
-        // prikaze odgovore
+        const boolMap = { 'True': 'Benar', 'False': 'Salah' };
+        function displayAnswer(val) { return boolMap[val] || val; }
+
         function addNewAnswer(id){
-            let answer  = answers[id];
+            let answer = displayAnswer(answers[id]);
             let listItem = document.createElement("li");
             listItem.innerHTML = 
             `<input type="radio" id="answer-${id}" class="radioInput" name="option" value="${id}">
@@ -47,7 +40,6 @@ async function nextQuestion(e){
             answers[i+1] = questionsJSON.results[questionNum].incorrect_answers[i];
         }
 
-        // premeša odgovore (razen če so T/F)
         function shuffle(array) {
             let currentIndex = array.length;
             while (currentIndex != 0) {
@@ -59,8 +51,6 @@ async function nextQuestion(e){
             }
         }
 
-        // če ima vprašanje 4 odgovore, jih naključno pomeša
-        // če sta samo 2 odgovora (T/F), jih da v zaporedje True, False
         if(questionsJSON.results[questionNum].type == 'multiple'){
             shuffle(answers);
         }
@@ -75,23 +65,16 @@ async function nextQuestion(e){
         for(let i = 0; i < answers.length; i++){
             addNewAnswer(i);
         }
-    
-        // onemogoči gumb za novo vprašanje
+
         btnHide();
     }
     else{
-        window.location.replace(`result.html?score=${score}`);
+        window.location.replace(`result.html?score=${score}&elapsed=${Math.floor((Date.now()-startTime)/1000)}&${new URLSearchParams(window.location.search).toString()}`);
     }
     return 0;
 }
 
-/*
-preveri pravilnost odgovora in prikaže rezultat
-*/
 async function confirmAnswer(e){
-    clearInterval(questionTimer);
-
-    // poišče izbrani odgovor
     let options = document.getElementsByName("option");
     let i;
     chosen = -1;
@@ -101,15 +84,16 @@ async function confirmAnswer(e){
         }
     }
 
-    // prikaže pravilnost odgovora in prišteje točke
     if(answers[chosen] == questionsJSON.results[questionNum].correct_answer){
         document.getElementById('noTimeLeft').style.display = 'none';
-        message.innerHTML = '<span class="big bold">You are right!<span>';
+        const diffMap = { easy: 60, medium: 45, hard: 30 };
+        const diff = new URLSearchParams(window.location.search).get('difficulty') || 'medium';
+        const timeLimit = diffMap[diff];
+        const timeTaken = (Date.now() - questionStartTime) / 1000;
+        const bonus = Math.round(50 * Math.max(0, 1 - timeTaken / timeLimit));
+        const newScore = 50 + bonus;
+        message.innerHTML = `<span class="big bold">Anda benar! +${newScore} poin (50 dasar + ${bonus} bonus)<span>`;
         document.getElementById(`li-${chosen}`).classList.add('correct');
-        let newScore = 85 + timeLeft;
-        if(newScore > 100){
-            newScore = 100;
-        }
         score += newScore;
         document.getElementById("scoreNum").innerHTML = score;
         messageBox.style.color = "var(--blue)";
@@ -117,7 +101,6 @@ async function confirmAnswer(e){
     else{
         wrongAnsDisp();
     }
-    // onemogoči spremembo odgovora, pokaže gumb za novo vprašanje
     disableAnswers();
     return 0;
 }

@@ -1,12 +1,9 @@
-/*
-Timer za posamezen odgovor
-timerTime določa čas timerja v sekundah
-*/
-let timeLeft, timerTime = 20;
+const diffMap = { easy: 60, medium: 45, hard: 30 };
+const diff = new URLSearchParams(window.location.search).get('difficulty');
+let timeLeft = diffMap[diff] ?? 20;
 var questionTimer = null;
 
 function startTimer() {
-    timeLeft = timerTime;
     updateTimer();
 }
 
@@ -14,7 +11,7 @@ function updateTimer() {
     document.getElementById('timer').innerHTML = timeLeft + 's';
     if (timeLeft <= 0) {
         clearTimeout(questionTimer);
-        tooSlow();
+        window.location.replace(`result.html?score=${score}&${new URLSearchParams(window.location.search).toString()}`);
         return;
     }
     timeLeft -= 1;
